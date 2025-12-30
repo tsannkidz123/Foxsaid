@@ -7,12 +7,10 @@ import AiAssistant from './components/AiAssistant';
 import IdeaGenie from './components/IdeaGenie';
 import CharacterDetailModal from './components/CharacterDetailModal';
 
-// --- Custom Components ---
 
 const FoxSpectaclesIcon = ({ className }: { className?: string }) => (
   <div className={`relative ${className} flex items-center justify-center`}>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-      {/* Fox Head Shape */}
       <path d="M12 21l-4-4H4v-4l4-4 4-4 4 4 4 4v4h-4l-4 4z" fill="currentColor" fillOpacity="0.1" />
       <path d="M12 21l-4-4H4v-4l4-4 4-4 4 4 4 4v4h-4l-4 4z" />
       {/* Ears */}
@@ -42,19 +40,15 @@ const App: React.FC = () => {
   const [outlines, setOutlines] = useState<Outline[]>([]);
   const [trash, setTrash] = useState<TrashItem[]>([]);
   
-  // Selection State
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
 
-  // Character UI State
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
   const [isCharModalOpen, setIsCharModalOpen] = useState(false);
   const [charSearch, setCharSearch] = useState('');
   const [charRoleFilter, setCharRoleFilter] = useState<string>('ALL');
 
-  // --- Initial Load (Mock) ---
   useEffect(() => {
-    // Pre-populate if empty
     if (stories.length === 0) {
         const demoStoryId = generateId();
         setStories([{
@@ -408,7 +402,6 @@ const App: React.FC = () => {
                         />
                     </div>
 
-                    {/* Filter */}
                     <div className="relative">
                          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none">
                              <Filter size={14} />
@@ -425,7 +418,6 @@ const App: React.FC = () => {
                          </select>
                     </div>
 
-                    {/* Create Button */}
                     <button 
                         onClick={() => {
                             setEditingCharacter(null);
