@@ -31,9 +31,6 @@ const AiAssistant: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // SAFE HISTORY LOGIC: 
-      // 1. Skips the first greeting if it's the only message.
-      // 2. Maps messages to the specific { role, parts } format Gemini requires.
       const history = currentMessages.length > 1 
         ? currentMessages.slice(0, -1).map(m => ({
             role: m.role === 'model' ? 'model' : 'user',
@@ -45,7 +42,7 @@ const AiAssistant: React.FC = () => {
       
       setMessages(prev => [...prev, { role: 'model', text: responseText || "抱歉，我暂时无法回答。" }]);
     } catch (e) {
-      console.error("Gemini Error:", e);
+      console.error("gemini Error:", e);
       setMessages(prev => [...prev, { role: 'model', text: "连接助手失败，请检查 API Key 或网络设置。" }]);
     } finally {
       setIsLoading(false);
@@ -54,7 +51,6 @@ const AiAssistant: React.FC = () => {
 
   return (
     <>
-      {/* Floating Toggle Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -64,7 +60,6 @@ const AiAssistant: React.FC = () => {
         </button>
       )}
 
-      {/* Chat Window */}
       {isOpen && (
         <div className="fixed bottom-6 right-6 w-80 sm:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col z-50 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           <div className="bg-indigo-600 text-white p-4 flex justify-between items-center shadow-md">
