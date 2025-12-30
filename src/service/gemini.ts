@@ -2,7 +2,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
-// General Chat Assistant
 export async function assistantChat(history: any[], msg: string) {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const chat = model.startChat({ history });
@@ -10,7 +9,6 @@ export async function assistantChat(history: any[], msg: string) {
   return result.response.text();
 }
 
-// Character Genie (JSON Mode)
 export async function generateCharacter(prompt: string) {
   const model = genAI.getGenerativeModel({ 
     model: "gemini-1.5-flash",
@@ -21,7 +19,6 @@ export async function generateCharacter(prompt: string) {
   return JSON.parse(result.response.text());
 }
 
-// Idea Genie (JSON Mode)
 export async function generateStoryConcept(prompt: string) {
   const model = genAI.getGenerativeModel({ 
     model: "gemini-1.5-flash",
