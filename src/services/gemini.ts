@@ -1,10 +1,35 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Accessing the API key from Vite environment variables
-// Make sure you add VITE_GEMINI_API_KEY to your Vercel Environment Variables!
+// Ensure VITE_GEMINI_API_KEY is set in Vercel Project Settings
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(API_KEY);
 
+/**
+ * Chat Assistant - Used by AiAssistant.tsx
+ */
+export const assistantChat = async (history: any[], msg: string) => {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const chat = model.startChat({
+      history: history,
+      generationConfig: {
+        maxOutputTokens: 1000,
+      },
+    });
+
+    const result = await chat.sendMessage(msg);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Assistant Chat Error:", error);
+    return "我的思维暂时卡壳了，请稍后再试。";
+  }
+};
+
+/**
+ * Story Continuation - Used by WritingEditor.tsx
+ */
 export const continueStory = async (context: string, lastLines: string) => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -19,35 +44,43 @@ export const continueStory = async (context: string, lastLines: string) => {
   }
 };
 
+/**
+ * Character Extraction - Used by WritingEditor.tsx
+ */
 export const extractCharactersFromText = async (text: string) => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const prompt = `从以下文本中提取主要人物，并以 JSON 格式返回（包含 name, role, description）：\n\n${text}`;
+    const prompt = `从以下文本中提取主要人物，并以 JSON 数组格式返回，包含字段: name, role, description, conflict, obstacle, action, ending。只需返回 JSON 代码块：\n\n${text}`;
     
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    // Basic extraction logic - in a real app, you'd want to parse this JSON
     return response.text();
   } catch (error) {
     console.error("Gemini extractCharacters Error:", error);
-    return "无法提取人物。";
+    return "[]";
   }
 };
 
+/**
+ * Outline Generation - Used by WritingEditor.tsx
+ */
 export const generateOutlineFromText = async (text: string) => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const prompt = `基于以下故事内容，生成一个包含四个阶段（开端、发展、高潮、结局）的大纲，并为每个阶段标注 0-100 的紧张度值：\n\n${text}`;
+    const prompt = `分析以下故事内容，生成一个包含四个阶段（开端、发展、高潮、结局）的大纲。为每个阶段提供：stage(阶段名称), tension(0-100的数值), description(描述)。只需返回 JSON 代码块：\n\n${text}`;
     
     const result = await model.generateContent(prompt);
     const response = await result.response;
     return response.text();
   } catch (error) {
     console.error("Gemini generateOutline Error:", error);
-    return "无法生成大纲。";
+    return "[]";
   }
 };
 
+/**
+ * Idea Generation - Used by IdeaGenie.tsx
+ */
 export const generateStoryIdea = async (answers: Record<string, string>) => {
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
