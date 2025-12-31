@@ -1,11 +1,14 @@
-export enum ViewState {
-  DASHBOARD = 'DASHBOARD',
-  STORY_LIBRARY = 'STORY_LIBRARY',
-  WRITING_DESK = 'WRITING_DESK', 
-  OUTLINE_WORLD = 'OUTLINE_WORLD',
-  DATA_LIBRARY = 'DATA_LIBRARY',
-  RECYCLE_BIN = 'RECYCLE_BIN',
-  IDEA_GENIE = 'IDEA_GENIE'
+export const ViewState = {
+  DASHBOARD: 'DASHBOARD',
+  STORY_LIBRARY: 'STORY_LIBRARY',
+  WRITING_DESK: 'WRITING_DESK', 
+  OUTLINE_WORLD: 'OUTLINE_WORLD',
+  DATA_LIBRARY: 'DATA_LIBRARY',
+  RECYCLE_BIN: 'RECYCLE_BIN',
+  IDEA_GENIE: 'IDEA_GENIE'
+} as const;
+
+export type ViewState = typeof ViewState[keyof typeof ViewState];
 }
 
 export type CharacterRole = '主角' | '反派' | '配角' | '路人' | string;
