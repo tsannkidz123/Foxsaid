@@ -340,7 +340,7 @@ const App: React.FC = () => {
                                 onClick={() => { setSelectedStoryId(story.id); setActiveChapterId(chapters.find(c => c.storyId === story.id)?.id || null); setCurrentView(ViewState.WRITING_DESK); }}
                                 className="text-sm text-indigo-600 font-medium hover:text-indigo-800"
                              >
-                                 继续书写
+                                  继续书写
                              </button>
                         </div>
                     </div>
@@ -504,26 +504,28 @@ const App: React.FC = () => {
   );
 
   const renderContent = () => {
+    const currentStory = stories.find(s => s.id === selectedStoryId);
+
     switch (currentView) {
       case ViewState.STORY_LIBRARY: return renderStoryLibrary();
       case ViewState.IDEA_GENIE: return <IdeaGenie onCreateStory={handleCreateStoryFromIdea} />;
-      case ViewState.WRITING_DESK: 
-        if (!selectedStoryId) return renderStoryLibrary();
-        const story = stories.find(s => s.id === selectedStoryId);
-        if (!story) return <div>Story not found</div>;
+      case ViewState.WRITING_DESK:
+        if (!selectedStoryId || !currentStory) {
+          return renderStoryLibrary();
+        }
         return (
           <WritingEditor
-            story={story}
+            story={currentStory} 
             activeChapterId={activeChapterId}
             chapters={chapters.filter(c => c.storyId === selectedStoryId).sort((a,b) => a.order - b.order)}
             onSaveChapter={handleSaveChapter}
             onCreateChapter={() => {
                 const newChapter: Chapter = {
                     id: generateId(),
-                    storyId: story.id,
-                    title: `第 ${chapters.filter(c => c.storyId === story.id).length + 1} 章`,
+                    storyId: currentStory.id,
+                    title: `第 ${chapters.filter(c => c.storyId === currentStory.id).length + 1} 章`,
                     content: "",
-                    order: chapters.filter(c => c.storyId === story.id).length + 1
+                    order: chapters.filter(c => c.storyId === currentStory.id).length + 1
                 };
                 setChapters([...chapters, newChapter]);
                 setActiveChapterId(newChapter.id);
