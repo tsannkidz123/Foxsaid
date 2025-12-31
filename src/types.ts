@@ -5,7 +5,7 @@ export enum ViewState {
   OUTLINE_WORLD = 'OUTLINE_WORLD',
   DATA_LIBRARY = 'DATA_LIBRARY',
   RECYCLE_BIN = 'RECYCLE_BIN',
-  IDEA_GENIE = 'IDEA_GENIE',
+  IDEA_GENIE = 'IDEA_GENIE'
 }
 
 export type CharacterRole = '主角' | '反派' | '配角' | '路人' | string;
@@ -64,11 +64,10 @@ export interface TrashItem {
   title: string;
 }
 
-// UPDATED: Matches standard AI Chat expectations
 export interface Message {
   id: string;
-  role: 'user' | 'assistant' | 'model'; // Added assistant for compatibility
-  content: string; // Changed from text to content
+  role: 'user' | 'assistant' | 'model';
+  content: string;
   timestamp: number;
 }
 
