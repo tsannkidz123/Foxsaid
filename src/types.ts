@@ -1,8 +1,7 @@
-
 export enum ViewState {
   DASHBOARD = 'DASHBOARD',
   STORY_LIBRARY = 'STORY_LIBRARY',
-  WRITING_DESK = 'WRITING_DESK', // The editor
+  WRITING_DESK = 'WRITING_DESK', 
   OUTLINE_WORLD = 'OUTLINE_WORLD',
   DATA_LIBRARY = 'DATA_LIBRARY',
   RECYCLE_BIN = 'RECYCLE_BIN',
@@ -16,21 +15,19 @@ export interface Character {
   storyId: string;
   name: string;
   role: CharacterRole;
-  // Core 4 - Story Drivers
-  conflict: string; // 冲突
-  obstacle: string; // 阻碍
-  action: string;   // 行动
-  ending: string;   // 结局
-  // Details
+  conflict: string; 
+  obstacle: string; 
+  action: string;  
+  ending: string;  
   description?: string;
-  appearance?: string; // 外貌
-  relationships?: string; // 人物关系
-  growthArc?: string; // 成长曲线
+  appearance?: string; 
+  relationships?: string; 
+  growthArc?: string; 
 }
 
 export interface OutlinePoint {
-  stage: string; // e.g., "Inciting Incident", "Climax"
-  tension: number; // 0-100
+  stage: string; 
+  tension: number; 
   description: string;
 }
 
@@ -67,9 +64,12 @@ export interface TrashItem {
   title: string;
 }
 
+// UPDATED: Matches standard AI Chat expectations
 export interface Message {
-  role: 'user' | 'model';
-  text: string;
+  id: string;
+  role: 'user' | 'assistant' | 'model'; // Added assistant for compatibility
+  content: string; // Changed from text to content
+  timestamp: number;
 }
 
 export interface AiToolsProps {
