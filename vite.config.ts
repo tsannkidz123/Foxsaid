@@ -11,12 +11,13 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+        // Use standard Vite environment variable access if possible
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
       },
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, '.'),
+          // Changed from '.' to './src' to match your new structure
+          '@': path.resolve(__dirname, './src'),
         }
       }
     };
