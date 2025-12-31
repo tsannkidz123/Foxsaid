@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Sparkles, Loader2 } from 'lucide-react';
-import { assistantChat } from '@/services/gemini'; // Using @ alias
-import { Message } from '@/types'; // Using @ alias
+import { X, Send, Sparkles, Loader2 } from 'lucide-react';
+import { assistantChat } from '@/services/gemini';
+import { Message } from '@/types';
 
 const AiAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { 
-      id: '1', 
+      id: 'initial', 
       role: 'model', 
       content: '你好！我是你的写作助手。需要查找资料、构思情节还是寻找灵感？',
       timestamp: Date.now() 
@@ -44,11 +44,11 @@ const AiAssistant: React.FC = () => {
       const history = currentMessages.length > 1 
         ? currentMessages.slice(0, -1).map(m => ({
             role: m.role === 'model' ? 'model' : 'user',
-            parts: [{ text: m.content }] // Changed text to content
+            parts: [{ text: m.content }]
           }))
         : [];
 
-      const responseText = await assistantChat(history, userMsg.content); // Changed text to content
+      const responseText = await assistantChat(history, userMsg.content);
       
       const assistantMsg: Message = {
         id: (Date.now() + 1).toString(),
@@ -59,11 +59,11 @@ const AiAssistant: React.FC = () => {
 
       setMessages(prev => [...prev, assistantMsg]);
     } catch (e) {
-      console.error("gemini Error:", e);
+      console.error("Gemini Error:", e);
       setMessages(prev => [...prev, { 
-        id: 'error', 
+        id: 'error-' + Date.now(), 
         role: 'model', 
-        content: "连接助手失败，请检查 API Key 或网络设置。",
+        content: "连接助手失败，请检查网络或 API 设置。",
         timestamp: Date.now() 
       }]);
     } finally {
@@ -102,7 +102,7 @@ const AiAssistant: React.FC = () => {
                     ? 'bg-indigo-600 text-white rounded-br-none shadow-sm' 
                     : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-sm'
                 }`}>
-                  {msg.content} {/* Changed msg.text to msg.content */}
+                  {msg.content}
                 </div>
               </div>
             ))}
@@ -124,20 +124,4 @@ const AiAssistant: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="问问助手如何写这个章节..."
-              className="flex-1 bg-slate-100 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-            />
-            <button 
-              onClick={handleSend}
-              disabled={isLoading || !input.trim()}
-              className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md active:scale-95"
-            >
-              <Send size={18} />
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-export default AiAssistant;
+              className="flex-1 bg-slate-100 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-
