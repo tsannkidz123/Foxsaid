@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { ViewState, Story, Chapter, Character, Outline, TrashItem, OutlinePoint, StoryConcept, CharacterRole } from './types';
+// Using the @ alias to point directly to the src folder
+import { ViewState, Story, Chapter, Character, Outline, TrashItem, OutlinePoint, StoryConcept, CharacterRole } from '@/types';
 import { BookOpen, PenTool, Map, Database, Trash2, Plus, Search, FileText, User, Lightbulb, Filter, Settings } from 'lucide-react';
-import WritingEditor from './components/WritingEditor';
-import OutlineWorld from './components/OutlineWorld';
-import AiAssistant from './components/AiAssistant';
-import IdeaGenie from './components/IdeaGenie';
-import CharacterDetailModal from './components/CharacterDetailModal';
 
+// Using @/components to ensure Vercel resolves the path correctly
+import WritingEditor from '@/components/WritingEditor';
+import OutlineWorld from '@/components/OutlineWorld';
+import AiAssistant from '@/components/AiAssistant';
+import IdeaGenie from '@/components/IdeaGenie';
+import CharacterDetailModal from '@/components/CharacterDetailModal';
 
 const FoxSpectaclesIcon = ({ className }: { className?: string }) => (
   <div className={`relative ${className} flex items-center justify-center`}>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
       <path d="M12 21l-4-4H4v-4l4-4 4-4 4 4 4 4v4h-4l-4 4z" fill="currentColor" fillOpacity="0.1" />
       <path d="M12 21l-4-4H4v-4l4-4 4-4 4 4 4 4v4h-4l-4 4z" />
-      {/* Ears */}
       <path d="M7 7l-2-3 4 1" />
       <path d="M17 7l2-3-4 1" />
-      {/* Spectacles (Glasses) */}
       <circle cx="9" cy="12" r="2.5" fill="white" />
       <circle cx="15" cy="12" r="2.5" fill="white" />
       <circle cx="9" cy="12" r="2.5" />
@@ -28,11 +28,9 @@ const FoxSpectaclesIcon = ({ className }: { className?: string }) => (
   </div>
 );
 
-// --- Mock Data Generators ---
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
 const App: React.FC = () => {
-  // --- Global State ---
   const [currentView, setCurrentView] = useState<ViewState>(ViewState.DASHBOARD);
   const [stories, setStories] = useState<Story[]>([]);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -71,7 +69,7 @@ const App: React.FC = () => {
             id: generateId(),
             storyId: demoStoryId,
             name: "艾伦",
-            role: "主角",
+            role: "主角" as CharacterRole,
             conflict: "生存与寻找真相",
             obstacle: "系统故障与异形生物",
             action: "逃离冷冻舱",
@@ -94,8 +92,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // --- Handlers ---
-
   const handleCreateStory = (isDocumentOnly: boolean = false) => {
     const newStory: Story = {
       id: generateId(),
@@ -108,7 +104,6 @@ const App: React.FC = () => {
     setStories([newStory, ...stories]);
     setSelectedStoryId(newStory.id);
     
-    // Auto create first chapter
     const newChapter: Chapter = {
         id: generateId(),
         storyId: newStory.id,
@@ -118,7 +113,6 @@ const App: React.FC = () => {
     };
     setChapters([newChapter, ...chapters]);
     setActiveChapterId(newChapter.id);
-
     setCurrentView(ViewState.WRITING_DESK);
   };
 
@@ -208,7 +202,6 @@ const App: React.FC = () => {
   };
 
   const handleSaveCharacter = (char: Character) => {
-      // Check if it's a new character or update
       const existing = characters.find(c => c.id === char.id);
       if (existing) {
           setCharacters(characters.map(c => c.id === char.id ? char : c));
@@ -243,8 +236,6 @@ const App: React.FC = () => {
       setOutlines([...outlines, newOutline]);
   };
 
-  // --- Render Helpers ---
-  
   const renderSidebarItem = (view: ViewState, icon: React.ReactNode, label: string) => (
     <button
       onClick={() => setCurrentView(view)}
@@ -360,15 +351,12 @@ const App: React.FC = () => {
   );
 
   const renderDataLibrary = () => {
-      // Filter Logic
       const filteredCharacters = characters.filter(c => {
           const matchText = (c.name + c.description + c.role).toLowerCase().includes(charSearch.toLowerCase());
           const matchRole = charRoleFilter === 'ALL' || c.role === charRoleFilter;
-          const matchStory = !selectedStoryId || c.storyId === selectedStoryId; // Optional: Limit to active story if inside one, but Global Lib shows all usually.
           return matchText && matchRole;
       });
 
-      // Group characters by story for display
       const groupedChars: Record<string, Character[]> = {};
       filteredCharacters.forEach(c => {
           if (!groupedChars[c.storyId]) groupedChars[c.storyId] = [];
@@ -390,7 +378,6 @@ const App: React.FC = () => {
                     <p className="text-slate-500 mt-1">管理所有故事的人物设定与世界观。</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
-                    {/* Search */}
                     <div className="relative">
                         <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
                         <input 
@@ -401,7 +388,6 @@ const App: React.FC = () => {
                             className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                         />
                     </div>
-
                     <div className="relative">
                          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none">
                              <Filter size={14} />
@@ -417,16 +403,11 @@ const App: React.FC = () => {
                              <option value="配角">配角</option>
                          </select>
                     </div>
-
                     <button 
-                        onClick={() => {
-                            setEditingCharacter(null);
-                            setIsCharModalOpen(true);
-                        }}
+                        onClick={() => { setEditingCharacter(null); setIsCharModalOpen(true); }}
                         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm shadow-indigo-200"
                     >
-                        <Plus size={16} />
-                        添加人物
+                        <Plus size={16} /> 添加人物
                     </button>
                 </div>
             </div>
@@ -438,7 +419,6 @@ const App: React.FC = () => {
                         <p>未找到匹配的人物。</p>
                     </div>
                 )}
-
                 {Object.keys(groupedChars).map(storyId => {
                     const storyTitle = stories.find(s => s.id === storyId)?.title || "未知故事";
                     return (
@@ -450,10 +430,7 @@ const App: React.FC = () => {
                                 {groupedChars[storyId].map(char => (
                                     <div 
                                         key={char.id} 
-                                        onClick={() => {
-                                            setEditingCharacter(char);
-                                            setIsCharModalOpen(true);
-                                        }}
+                                        onClick={() => { setEditingCharacter(char); setIsCharModalOpen(true); }}
                                         className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer group"
                                     >
                                         <div className="flex justify-between items-start mb-3">
@@ -470,11 +447,8 @@ const App: React.FC = () => {
                                             </div>
                                             <Settings size={16} className="text-slate-300 group-hover:text-indigo-400 transition-colors" />
                                         </div>
-                                        
                                         <div className="space-y-2 text-xs text-slate-500 mt-3">
-                                            {char.description && (
-                                                <p className="line-clamp-2 italic text-slate-400 mb-2">{char.description}</p>
-                                            )}
+                                            {char.description && <p className="line-clamp-2 italic text-slate-400 mb-2">{char.description}</p>}
                                             <div className="flex gap-2">
                                                 <span className="font-bold text-slate-300 w-8 flex-shrink-0">冲突</span> 
                                                 <span className="truncate">{char.conflict || "-"}</span>
@@ -488,11 +462,10 @@ const App: React.FC = () => {
                                 ))}
                             </div>
                         </div>
-                    )
+                    );
                 })}
             </div>
 
-            {/* Modal */}
             <CharacterDetailModal 
                 isOpen={isCharModalOpen}
                 onClose={() => setIsCharModalOpen(false)}
@@ -509,12 +482,7 @@ const App: React.FC = () => {
     <div className="p-8 h-full overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-slate-800">回收站</h1>
-            <button 
-                onClick={() => setTrash([])}
-                className="text-red-500 text-sm hover:text-red-600 font-medium"
-            >
-                清空回收站
-            </button>
+            <button onClick={() => setTrash([])} className="text-red-500 text-sm hover:text-red-600 font-medium">清空回收站</button>
         </div>
         <div className="space-y-2">
             {trash.map(item => (
@@ -530,16 +498,10 @@ const App: React.FC = () => {
                     </div>
                 </div>
             ))}
-            {trash.length === 0 && (
-                <div className="text-center py-10 text-slate-400">
-                    回收站是空的
-                </div>
-            )}
+            {trash.length === 0 && <div className="text-center py-10 text-slate-400">回收站是空的</div>}
         </div>
     </div>
   );
-
-  // --- Main Render ---
 
   const renderContent = () => {
     switch (currentView) {
@@ -581,13 +543,9 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
-      {/* Sidebar Navigation */}
       <div className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between z-10">
         <div>
-          <div 
-            onClick={() => setCurrentView(ViewState.DASHBOARD)}
-            className="p-6 flex items-center gap-3 mb-4 cursor-pointer hover:opacity-80 transition-opacity group"
-          >
+          <div onClick={() => setCurrentView(ViewState.DASHBOARD)} className="p-6 flex items-center gap-3 mb-4 cursor-pointer hover:opacity-80 transition-opacity group">
              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform">
                <FoxSpectaclesIcon className="w-7 h-7" />
              </div>
@@ -612,13 +570,9 @@ const App: React.FC = () => {
             {renderSidebarItem(ViewState.RECYCLE_BIN, <Trash2 size={18} />, '回收站')}
         </div>
       </div>
-
-      {/* Main Content Area */}
       <div className="flex-1 h-full relative overflow-hidden">
         {renderContent()}
       </div>
-
-      {/* Global AI Assistant */}
       <AiAssistant />
     </div>
   );
