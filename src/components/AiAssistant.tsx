@@ -1,12 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Sparkles, Loader2 } from 'lucide-react';
-import { assistantChat } from '../services/gemini';
-import { Message } from '../types';
+import { assistantChat } from '@/services/gemini'; // Using @ alias
+import { Message } from '@/types'; // Using @ alias
 
 const AiAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: '你好！我是你的写作助手。需要查找资料、构思情节还是寻找灵感？' }
+    { 
+      id: '1', 
+      role: 'model', 
+      content: '你好！我是你的写作助手。需要查找资料、构思情节还是寻找灵感？',
+      timestamp: Date.now() 
+    }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -23,9 +28,14 @@ const AiAssistant: React.FC = () => {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
     
-    const userMsg: Message = { role: 'user', text: input };
+    const userMsg: Message = { 
+      id: Date.now().toString(),
+      role: 'user', 
+      content: input,
+      timestamp: Date.now()
+    };
+
     const currentMessages = [...messages, userMsg];
-    
     setMessages(currentMessages);
     setInput('');
     setIsLoading(true);
@@ -34,16 +44,28 @@ const AiAssistant: React.FC = () => {
       const history = currentMessages.length > 1 
         ? currentMessages.slice(0, -1).map(m => ({
             role: m.role === 'model' ? 'model' : 'user',
-            parts: [{ text: m.text }]
+            parts: [{ text: m.content }] // Changed text to content
           }))
         : [];
 
-      const responseText = await assistantChat(history, userMsg.text);
+      const responseText = await assistantChat(history, userMsg.content); // Changed text to content
       
-      setMessages(prev => [...prev, { role: 'model', text: responseText || "抱歉，我暂时无法回答。" }]);
+      const assistantMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'model',
+        content: responseText || "抱歉，我暂时无法回答。",
+        timestamp: Date.now()
+      };
+
+      setMessages(prev => [...prev, assistantMsg]);
     } catch (e) {
       console.error("gemini Error:", e);
-      setMessages(prev => [...prev, { role: 'model', text: "连接助手失败，请检查 API Key 或网络设置。" }]);
+      setMessages(prev => [...prev, { 
+        id: 'error', 
+        role: 'model', 
+        content: "连接助手失败，请检查 API Key 或网络设置。",
+        timestamp: Date.now() 
+      }]);
     } finally {
       setIsLoading(false);
     }
@@ -73,14 +95,14 @@ const AiAssistant: React.FC = () => {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-4">
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            {messages.map((msg) => (
+              <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${
                   msg.role === 'user' 
                     ? 'bg-indigo-600 text-white rounded-br-none shadow-sm' 
                     : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-sm'
                 }`}>
-                  {msg.text}
+                  {msg.content} {/* Changed msg.text to msg.content */}
                 </div>
               </div>
             ))}
